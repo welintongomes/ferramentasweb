@@ -5,6 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Ferramentas</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sites Manager">
     <style>
         * {
             margin: 0;
@@ -56,7 +63,7 @@
         .site-card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
-            padding: 25px;
+            padding: 9px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -87,7 +94,7 @@
         }
 
         .site-card h3 {
-            font-size: 1.5em;
+            font-size: 1.4em;
             margin-bottom: 10px;
             color: #4a5568;
         }
@@ -98,8 +105,10 @@
         }
 
         .site-actions {
+            margin-left: 11px;
             display: flex;
             gap: 10px;
+            justify-content: flex-start;
         }
 
         .btn {
@@ -198,7 +207,6 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9em;
-            margin-right: 10px;
         }
 
         .site-frame {
@@ -261,7 +269,8 @@
         }
 
         .form-group textarea {
-            height: 300px;
+            font-size: 12px;
+            height: 156px;
             font-family: 'Courier New', monospace;
             resize: vertical;
         }
@@ -274,7 +283,7 @@
 
         #clearSearch {
             position: absolute;
-            left: 2%;
+            left: 13.3%;
             top: 50%;
             transform: translateY(-50%);
             background: none;
@@ -282,8 +291,7 @@
             color: rgb(153, 153, 153);
             cursor: pointer;
             display: none;
-            /* padding: 5px; */
-            font-size: 30px;
+            font-size: 32px;
             font-weight: bold;
         }
 
@@ -298,9 +306,9 @@
         #searchInput {
             font-size: 20px;
             position: relative;
-            left: 0%;
+            left: 14%;
             padding: 7px 5px 7px 38px;
-            width: 123%;
+            width: 100%;
             border-radius: 5px;
             border: 1px solid #ddd;
         }
@@ -349,13 +357,25 @@
             z-index: 1000;
         }
 
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        #offlineIndicator {
+            border-radius: 50px;
+            font-size: 12px;
+            height: 21px;
+            width: 30%;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
             }
 
             .header h1 {
-                font-size: 2em;
+                font-size: 1.5em;
             }
 
             .modal-content {
@@ -365,10 +385,10 @@
 
             .search-random-btn {
                 position: fixed;
-                bottom: 18%;
-                right: 79%;
-                width: 60px;
-                height: 60px;
+                bottom: 42%;
+                right: 87.9%;
+                width: 30px;
+                height: 30px;
                 border-radius: 50%;
                 background: linear-gradient(45deg, #1e90ff, #3742fa);
                 border: none;
@@ -382,10 +402,10 @@
 
 
             .add-site-btn {
-                bottom: 93%;
-                right: 4%;
-                width: 50px;
-                height: 50px;
+                bottom: 32%;
+                right: 87.8%;
+                width: 30px;
+                height: 30px;
                 font-size: 20px;
             }
 
@@ -421,6 +441,41 @@
                 font-size: 30px;
                 font-weight: bold;
             }
+
+            .site-card {
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 15px;
+                padding: 7px 3px 7px 38px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            #searchInput {
+                font-size: 20px;
+                position: relative;
+                left: 0%;
+                padding: 7px 5px 7px 38px;
+                width: 123%;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+            }
+
+            .fundo {
+                position: relative;
+                left: 15%;
+            }
+
+            .form-group textarea {
+                font-size: 12px;
+                height: 300px;
+                font-family: 'Courier New', monospace;
+                resize: vertical;
+            }
         }
     </style>
 </head>
@@ -429,6 +484,10 @@
     <div class="container">
         <div class="header">
             <h1>🛠️Ferramentas</h1>
+            <div id="offlineIndicator"
+                style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #f39c12; color: white; text-align: center; padding: 5px; z-index: 9999;">
+                📱 Modo Offline
+            </div>
             <p></p>
         </div>
         <div class="sites-grid" id="sitesGrid">
@@ -480,17 +539,21 @@
 
         <!-- Overlay para exibir site em tela cheia -->
         <div class="fullscreen-overlay" id="fullscreenOverlay">
+
             <div class="fullscreen-content">
-                <div class="fullscreen-header">
-                    <h2 id="fullscreenTitle">Ferramenta</h2>
-                    <div>
-                        <button class="edit-btn" onclick="editCurrentSite()">Editar</button>
-                        <button class="close-btn" onclick="closeFullscreen()">Fechar</button>
-                    </div>
-                </div>
                 <iframe class="site-frame" id="siteFrame" srcdoc=""></iframe>
+
+                <div class="fullscreen-header bottom-header">
+                    <div class="left-buttons">
+                        <button class="close-btn" onclick="closeFullscreen()">Fechar</button>
+                        <button class="edit-btn" onclick="editCurrentSite()">Editar</button>
+                    </div>
+                    <h2 id="fullscreenTitle" class="title-right">Ferramenta</h2>
+                </div>
             </div>
+
         </div>
+
 
         <script>
             // mudando para indexedb Configuração do IndexedDB
@@ -539,83 +602,83 @@
                                 name: "Contador de Cliques",
                                 description: "Ferramenta simples para contar cliques",
                                 code: `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador de Cliques</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
-            color: white;
-        }
-        .container {
-            text-align: center;
-            background: rgba(255,255,255,0.1);
-            padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-        .counter {
-            font-size: 4em;
-            font-weight: bold;
-            margin: 20px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .btn {
-            font-size: 1.2em;
-            padding: 15px 30px;
-            margin: 10px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-        }
-        .btn-click {
-            background: #00b894;
-            color: white;
-        }
-        .btn-reset {
-            background: #e17055;
-            color: white;
-        }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-    <\/style>
-</head>
-<body>
-    <div class="container">
-        <h1>🖱️ Contador de Cliques</h1>
-        <div class="counter" id="counter">0</div>
-        <button class="btn btn-click" onclick="incrementCounter()">Clique Aqui!</button>
-        <button class="btn btn-reset" onclick="resetCounter()">Resetar</button>
-    </div>
-    
-    <script>
-        let count = 0;
-        
-        function incrementCounter() {
-            count++;
-            document.getElementById('counter').textContent = count;
-        }
-        
-        function resetCounter() {
-            count = 0;
-            document.getElementById('counter').textContent = count;
-        }
-    <\/script>
-</body>
-</html>`
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Contador de Cliques</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                    background: linear-gradient(135deg, #74b9ff, #0984e3);
+                    color: white;
+                }
+                .container {
+                    text-align: center;
+                    background: rgba(255,255,255,0.1);
+                    padding: 40px;
+                    border-radius: 20px;
+                    backdrop-filter: blur(10px);
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                }
+                .counter {
+                    font-size: 4em;
+                    font-weight: bold;
+                    margin: 20px 0;
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                }
+                .btn {
+                    font-size: 1.2em;
+                    padding: 15px 30px;
+                    margin: 10px;
+                    border: none;
+                    border-radius: 50px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    font-weight: bold;
+                }
+                .btn-click {
+                    background: #00b894;
+                    color: white;
+                }
+                .btn-reset {
+                    background: #e17055;
+                    color: white;
+                }
+                .btn:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+                }
+            <\/style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🖱️ Contador de Cliques</h1>
+                <div class="counter" id="counter">0</div>
+                <button class="btn btn-click" onclick="incrementCounter()">Clique Aqui!</button>
+                <button class="btn btn-reset" onclick="resetCounter()">Resetar</button>
+            </div>
+            
+            <script>
+                let count = 0;
+                
+                function incrementCounter() {
+                    count++;
+                    document.getElementById('counter').textContent = count;
+                }
+                
+                function resetCounter() {
+                    count = 0;
+                    document.getElementById('counter').textContent = count;
+                }
+            <\/script>
+        </body>
+        </html>`
                             }];
                             saveSites(); // Salvar no IndexedDB
                         }
@@ -624,6 +687,18 @@
                 } catch (error) {
                     console.error('Erro ao carregar sites:', error);
                     renderSites();
+                }
+            }
+            // Precarregar recursos críticos
+            function preloadCriticalResources() {
+                if ('serviceWorker' in navigator && 'caches' in window) {
+                    caches.open(CACHE_NAME).then(cache => {
+                        // Precarrega recursos importantes
+                        cache.addAll([
+                            '/',
+                            '/index.html'
+                        ]);
+                    });
                 }
             }
 
@@ -635,12 +710,13 @@
                     const store = transaction.objectStore(STORE_NAME);
 
                     // Limpar dados existentes
-                    await store.clear();
-
-                    // Adicionar todos os sites
-                    for (const site of sites) {
-                        await store.add(site);
-                    }
+                    const clearRequest = store.clear();
+                    clearRequest.onsuccess = () => {
+                        // Adicionar todos os sites em batch
+                        sites.forEach(site => {
+                            store.add(site);
+                        });
+                    };
                 } catch (error) {
                     console.error('Erro ao salvar sites:', error);
                 }
@@ -650,18 +726,20 @@
             function renderSites() {
                 const grid = document.getElementById('sitesGrid');
                 grid.innerHTML = '';
-
-                sites.forEach((site, index) => {
+                //modificaçao para mostrar os ultimos sites no topo da lista
+                sites.slice().reverse().forEach((site, originalIndex) => {
+                    const index = sites.length - 1 - originalIndex;
                     const card = document.createElement('div');
                     card.className = 'site-card';
                     card.innerHTML = `
-                    <h3>${site.name}</h3>
-                    <p>${site.description || 'Sem descrição'}</p>
-                    <div class="site-actions">
-                        <button class="btn btn-primary" onclick="openSite(${index})">Abrir</button>
-                        <button class="btn btn-secondary" onclick="editSite(${index})">Editar</button>
-                    </div>
-                `;
+                            <h3>${site.name}</h3>
+                            <p>${site.description || 'Sem descrição'}</p>
+                            <div class="site-actions">
+                                <button class="btn btn-primary" onclick="openSite(${index})">Abrir</button>
+                                <button class="btn edit-btn" onclick="editSite(${index})">Editar</button>
+                                <button class="btn btn-danger" onclick="deleteSite(${index})">Excluir</button>
+                            </div>
+                        `;
                     grid.appendChild(card);
                 });
             }
@@ -697,19 +775,20 @@
                     grid.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">Nenhum site encontrado</p>';
                     return;
                 }
-
-                filteredSites.forEach((site) => {
+                //modificaçao para mostrar os ultimos sites adicionados ao topo da lista
+                filteredSites.slice().reverse().forEach((site) => {
                     const originalIndex = sites.indexOf(site);
                     const card = document.createElement('div');
                     card.className = 'site-card';
                     card.innerHTML = `
-            <h3>${site.name}</h3>
-            <p>${site.description || 'Sem descrição'}</p>
-            <div class="site-actions">
-                <button class="btn btn-primary" onclick="openSite(${originalIndex})">Abrir</button>
-                <button class="btn btn-secondary" onclick="editSite(${originalIndex})">Editar</button>
-            </div>
-        `;
+                    <h3>${site.name}</h3>
+                    <p>${site.description || 'Sem descrição'}</p>
+                    <div class="site-actions">
+                        <button class="btn btn-primary" onclick="openSite(${originalIndex})">Abrir</button>
+                        <button class="btn edit-btn" onclick="editSite(${originalIndex})">Editar</button>
+                        <button class="btn btn-danger" onclick="deleteSite(${originalIndex})">Excluir</button>
+                    </div>
+                `;
                     grid.appendChild(card);
                 });
             }
@@ -719,7 +798,12 @@
                 currentSiteIndex = index;
                 const site = sites[index];
                 document.getElementById('fullscreenTitle').textContent = site.name;
-                document.getElementById('siteFrame').srcdoc = site.code;
+                //lazy loading para otimizaçao
+                const iframe = document.getElementById('siteFrame');
+                iframe.srcdoc = '';
+                setTimeout(() => {
+                    iframe.srcdoc = site.code;
+                }, 100);
                 document.getElementById('fullscreenOverlay').style.display = 'block';
             }
 
@@ -753,6 +837,20 @@
                 document.getElementById('siteDescription').value = site.description || '';
                 document.getElementById('siteCode').value = site.code;
                 document.getElementById('siteModal').style.display = 'block';
+            }
+            //função para deletar site
+            function deleteSite(index) {
+                if (index < 0 || index >= sites.length) {
+                    console.error('Índice de site inválido:', index);
+                    return;
+                }
+
+                const site = sites[index];
+                if (confirm(`Tem certeza que deseja excluir "${site.name}"?`)) {
+                    sites.splice(index, 1);
+                    saveSites();
+                    renderSites();
+                }
             }
 
             // Editar site atual (quando em tela cheia)
@@ -803,18 +901,22 @@
 
             //event listener para funçao de pesquisa
             // Event listener para pesquisa
+            let searchTimeout;
             document.getElementById('searchInput').addEventListener('input', function (e) {
                 const searchTerm = e.target.value;
                 const clearBtn = document.getElementById('clearSearch');
 
-                // Mostrar/esconder botão X
+                clearTimeout(searchTimeout);
+
                 if (searchTerm.trim() !== '') {
                     clearBtn.style.display = 'block';
                 } else {
                     clearBtn.style.display = 'none';
                 }
 
-                filterSites(searchTerm);
+                searchTimeout = setTimeout(() => {
+                    filterSites(searchTerm);
+                }, 300);
             });
 
             // Event listener para o botão de limpar
@@ -912,12 +1014,65 @@
             }
 
 
+
+
+            //service worker para funcionamento offline
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(function (registration) {
+                            console.log('SW registrado com sucesso:', registration.scope);
+
+                            // Verificar atualizações
+                            registration.addEventListener('updatefound', function () {
+                                console.log('Nova versão do SW disponível');
+                            });
+                        })
+                        .catch(function (error) {
+                            console.log('Falha ao registrar SW:', error);
+                        });
+                });
+            }
+            // Detectar status offline/online
+            function updateOnlineStatus() {
+                const indicator = document.getElementById('offlineIndicator');
+                if (navigator.onLine) {
+                    indicator.style.display = 'none';
+                    indicator.textContent = '🌐 Online';
+                } else {
+                    indicator.style.display = 'block';
+                    indicator.textContent = '📱 Modo Offline - Funcionalidade completa disponível';
+                }
+            }
+
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+
+            // Verificar status inicial após carregar
+            window.addEventListener('load', function () {
+                updateOnlineStatus();
+
+                // Teste de conectividade real
+                fetch('./manifest.json', { method: 'HEAD', cache: 'no-cache' })
+                    .then(() => {
+                        console.log('Conectividade confirmada');
+                    })
+                    .catch(() => {
+                        console.log('Sem conectividade real');
+                        const indicator = document.getElementById('offlineIndicator');
+                        indicator.style.display = 'block';
+                        indicator.textContent = '📱 Modo Offline';
+                    });
+            });
+
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus(); // Verificar status inicial
             // Carregar sites ao iniciar
             // Mudança: fazer a chamada async
             (async () => {
                 await loadSites();
             })();
-
         </script>
 </body>
 
