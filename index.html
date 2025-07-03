@@ -40,7 +40,7 @@
 
         .header h1 {
             font-size: 2.5em;
-            margin-bottom: 10px;
+            margin-bottom: 0px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
@@ -283,7 +283,7 @@
 
         #clearSearch {
             position: absolute;
-            left: 13.3%;
+            left: 14.6%;
             top: 50%;
             transform: translateY(-50%);
             background: none;
@@ -374,6 +374,20 @@
                 padding: 15px;
             }
 
+            .header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                /* ou qualquer cor de fundo para não sobrepor visualmente */
+                z-index: 1000;
+                /* garante que fique acima dos outros elementos */
+                padding: 10px 20px;
+                /* opcional */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                /* opcional para dar um destaque */
+            }
+
             .header h1 {
                 font-size: 1.5em;
             }
@@ -419,14 +433,7 @@
                 flex-direction: column;
             }
 
-            .sites-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 25px;
-                min-height: 200px;
-                max-height: 78vh;
-                overflow-y: auto;
-            }
+
 
             #clearSearch {
                 position: absolute;
@@ -476,6 +483,25 @@
                 font-family: 'Courier New', monospace;
                 resize: vertical;
             }
+
+            .grid-wrapper {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                /* começa do meio */
+                min-height: 89vh;
+                /* ocupa altura total da tela */
+            }
+
+            .sites-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+                min-height: 200px;
+                max-height: 78vh;
+                overflow-y: auto;
+            }
+
         }
     </style>
 </head>
@@ -490,9 +516,12 @@
             </div>
             <p></p>
         </div>
-        <div class="sites-grid" id="sitesGrid">
-            <!-- Sites serão carregados aqui -->
+        <div class="grid-wrapper">
+            <div class="sites-grid" id="sitesGrid">
+                <!-- Sites serão carregados aqui -->
+            </div>
         </div>
+
     </div>
 
 
@@ -898,9 +927,7 @@
                 }
             });
 
-
             //event listener para funçao de pesquisa
-            // Event listener para pesquisa
             let searchTimeout;
             document.getElementById('searchInput').addEventListener('input', function (e) {
                 const searchTerm = e.target.value;
@@ -1012,9 +1039,6 @@
                     console.log("SpeechRecognition não está disponível.");
                 }
             }
-
-
-
 
             //service worker para funcionamento offline
             if ('serviceWorker' in navigator) {
